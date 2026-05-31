@@ -76,6 +76,7 @@ const API_BASE = import.meta.env.VITE_API_URL || '';
 async function fetchAPI(endpoint: string, options?: RequestInit) {
   const res = await fetch(`${API_BASE}/api${endpoint}`, {
     headers: { 'Content-Type': 'application/json', ...options?.headers },
+    credentials: 'include',
     ...options,
   });
   if (!res.ok) throw new Error(`API Error: ${res.statusText}`);
