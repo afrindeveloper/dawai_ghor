@@ -58,11 +58,20 @@ app.post('/api/users/logout', (req, res) => {
 app.post('/api/users/login', async (req, res) => {
   const { email, password } = req.body;
   if (email === 'admin@dawai.com' && password === 'admin123') {
-    const admin = await User.findOne({ email: 'admin@dawai.com' });
-    if(admin) {
-      res.cookie('userId', admin.id, cookieOptions);
-      return res.json(admin);
+    let admin = await User.findOne({ email: 'admin@dawai.com' });
+    if(!admin) {
+      admin = new User({
+        id: 'admin-1',
+        name: 'Super Admin',
+        email: 'admin@dawai.com',
+        phone: '1234567890',
+        role: 'admin',
+        isActive: true
+      });
+      await admin.save();
     }
+    res.cookie('userId', admin.id, cookieOptions);
+    return res.json(admin);
   }
   const user = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') }, isActive: true, role: 'user' });
   if (user) {
