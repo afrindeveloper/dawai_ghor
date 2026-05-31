@@ -18,8 +18,22 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+const cookieOptions = {
+  httpOnly: true,
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  secure: process.env.NODE_ENV === 'production'
+};
+
+const allowedOrigins = process.env.FRONTEND_URL ? [process.env.FRONTEND_URL, 'http://localhost:5173'] : ['http://localhost:5173'];
 app.use(cors({
-  origin: true,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
@@ -29,7 +43,7 @@ app.use(cookieParser());
 app.use((req, res, next) => {
   if (!req.cookies.sessionId) {
     const newSessionId = uuidv4();
-    res.cookie('sessionId', newSessionId, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
+    res.cookie('sessionId', newSessionId, cookieOptions);
     req.sessionId = newSessionId;
   } else {
     req.sessionId = req.cookies.sessionId;
@@ -52,13 +66,13 @@ app.post('/api/users/login', async (req, res) => {
   if (email === 'admin@dawai.com' && password === 'admin123') {
     const admin = await User.findOne({ email: 'admin@dawai.com' });
     if(admin) {
-      res.cookie('userId', admin.id, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
+      res.cookie('userId', admin.id, cookieOptions);
       return res.json(admin);
     }
   }
   const user = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') }, isActive: true, role: 'user' });
   if (user) {
-    res.cookie('userId', user.id, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
+    res.cookie('userId', user.id, cookieOptions);
     return res.json(user);
   }
   
@@ -72,7 +86,7 @@ app.post('/api/users/login', async (req, res) => {
       isActive: true,
     });
     await newUser.save();
-    res.cookie('userId', newUser.id, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
+    res.cookie('userId', newUser.id, cookieOptions);
     return res.json(newUser);
   }
   res.status(401).json({ error: 'Invalid credentials' });
@@ -87,7 +101,7 @@ app.post('/api/users', async (req, res) => {
   const user = new User(req.body);
   await user.save();
   // Also login if it's registration
-  res.cookie('userId', user.id, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
+  res.cookie('userId', user.id, cookieOptions);
   res.json(user);
 });
 app.put('/api/users/:id', async (req, res) => {

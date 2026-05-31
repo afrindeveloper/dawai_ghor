@@ -71,8 +71,10 @@ export interface CarouselSlide {
 }
 
 // ─── API Helper ──────────────────────────────────────────────────────────────
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 async function fetchAPI(endpoint: string, options?: RequestInit) {
-  const res = await fetch(`/api${endpoint}`, {
+  const res = await fetch(`${API_BASE}/api${endpoint}`, {
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     ...options,
   });
