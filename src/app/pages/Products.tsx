@@ -65,10 +65,16 @@ export default function Products() {
       }
     });
 
-  const handleAddToCart = async (product: typeof defaultProducts[0]) => {
-    await addToCart(product);
-    window.dispatchEvent(new Event("cartUpdated"));
-    toast.success(`${product.name} added to cart!`);
+  const handleAddToCart = async (product: typeof defaultProducts[0], e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await addToCart(product);
+      window.dispatchEvent(new Event("cartUpdated"));
+      toast.success(`${product.name} added to cart!`);
+    } catch (error) {
+      toast.error("Please sign in to add items to cart");
+    }
   };
 
   const handleWishlist = async (productId: string, e: React.MouseEvent) => {
@@ -149,7 +155,7 @@ export default function Products() {
                 </div>
                 <Button
                   className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl"
-                  onClick={() => handleAddToCart(product)}
+                  onClick={(e) => handleAddToCart(product, e)}
                   size="sm"
                 >
                   <ShoppingCart className="w-4 h-4 mr-1.5" />

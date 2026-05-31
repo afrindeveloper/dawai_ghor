@@ -24,17 +24,29 @@ export default function UserWishlist() {
     toast.success("Removed from wishlist");
   };
 
-  const handleAddToCart = async (product: typeof defaultProducts[0]) => {
-    await addToCart(product);
-    window.dispatchEvent(new Event("cartUpdated"));
-    toast.success(`${product.name} added to cart!`);
+  const handleAddToCart = async (product: typeof defaultProducts[0], e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    try {
+      await addToCart(product);
+      window.dispatchEvent(new Event("cartUpdated"));
+      toast.success(`${product.name} added to cart!`);
+    } catch (error) {
+      toast.error("Please sign in to add items to cart");
+    }
   };
 
   const handleAddAllToCart = async () => {
     if (wishlistProducts.length === 0) return;
-    await Promise.all(wishlistProducts.map(p => addToCart(p)));
-    window.dispatchEvent(new Event("cartUpdated"));
-    toast.success("All items added to cart!");
+    try {
+      await Promise.all(wishlistProducts.map(p => addToCart(p)));
+      window.dispatchEvent(new Event("cartUpdated"));
+      toast.success("All items added to cart!");
+    } catch (error) {
+      toast.error("Please sign in to add items to cart");
+    }
   };
 
   return (
@@ -104,8 +116,8 @@ export default function UserWishlist() {
                   </div>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => handleAddToCart(product)}
-                      className="flex-1 flex items-center justify-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-xl text-sm transition-colors"
+                      onClick={(e) => handleAddToCart(product, e)}
+                      className="flex-1 flex items-center justify-center gap-2 bg-slate-900 hover:bg-orange-500 text-white py-2 px-4 rounded-xl transition-colors text-sm"
                       style={{ fontWeight: 600 }}
                     >
                       <ShoppingCart className="w-4 h-4" />

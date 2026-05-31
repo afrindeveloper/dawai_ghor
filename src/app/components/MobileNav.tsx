@@ -31,7 +31,8 @@ export default function MobileNav() {
 
   useEffect(() => {
     const update = async () => {
-      setUser(getCurrentUser());
+      const u = await getCurrentUser();
+      setUser(u);
       const cart = await getCart();
       setCartCount(cart.reduce((s, i) => s + i.quantity, 0));
     };

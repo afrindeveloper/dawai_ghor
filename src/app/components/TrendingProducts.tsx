@@ -19,9 +19,13 @@ export default function TrendingProducts() {
   const handleAddToCart = async (product: Product, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    await addToCart(product);
-    toast.success(`${product.name} added to cart!`);
-    window.dispatchEvent(new Event("cartUpdated"));
+    try {
+      await addToCart(product);
+      toast.success(`${product.name} added to cart!`);
+      window.dispatchEvent(new Event("cartUpdated"));
+    } catch (error) {
+      toast.error("Please sign in to add items to cart");
+    }
   };
 
   return (

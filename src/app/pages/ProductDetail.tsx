@@ -65,9 +65,13 @@ export default function ProductDetail() {
     .slice(0, 4);
 
   const handleAddToCart = async () => {
-    for (let i = 0; i < quantity; i++) await addToCart(product);
-    toast.success(`${quantity}x ${product.name} added to cart!`);
-    window.dispatchEvent(new Event("cartUpdated"));
+    try {
+      for (let i = 0; i < quantity; i++) await addToCart(product);
+      toast.success(`${quantity}x ${product.name} added to cart!`);
+      window.dispatchEvent(new Event("cartUpdated"));
+    } catch (error) {
+      toast.error("Please sign in to add items to cart");
+    }
   };
 
   const handleWishlist = async () => {
