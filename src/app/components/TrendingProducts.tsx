@@ -1,15 +1,22 @@
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { ShoppingCart, Star, ChevronRight } from "lucide-react";
 import { Link } from "react-router";
-import { products } from "../data/mockData";
-import { addToCart } from "../utils/api";
+import { addToCart, getAdminProducts, Product } from "../utils/api";
 import { toast } from "sonner";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 export default function TrendingProducts() {
-  const trendingProducts = products.slice(0, 10);
+  const [trendingProducts, setTrendingProducts] = useState<Product[]>([]);
 
-  const handleAddToCart = async (product: typeof products[0], e: React.MouseEvent) => {
+  useEffect(() => {
+    getAdminProducts().then((data) => {
+      // Just slice the first 10 products to display as "Trending"
+      setTrendingProducts(data.slice(0, 10));
+    });
+  }, []);
+
+  const handleAddToCart = async (product: Product, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     await addToCart(product);
@@ -89,11 +96,11 @@ export default function TrendingProducts() {
                   <div className="flex flex-col">
                     {product.originalPrice && (
                       <span className="text-xs text-gray-400 line-through font-medium">
-                        ${product.originalPrice.toFixed(2)}
+                        $\{(product.originalPrice).toFixed(2)}
                       </span>
                     )}
                     <span className="text-xl font-black text-gray-900">
-                      ${product.price.toFixed(2)}
+                      $\{(product.price).toFixed(2)}
                     </span>
                   </div>
 
