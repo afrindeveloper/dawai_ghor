@@ -7,7 +7,7 @@ import {
   ChevronRight, Settings, Package, Star, Bell,
   LogIn, UserPlus, Sparkles
 } from "lucide-react";
-import { getCurrentUser, logoutUser, getCart } from "../utils/localStorage";
+import { getCurrentUser, logoutUser, getCart } from "../utils/api";
 import { toast } from "sonner";
 
 const NAV_ITEMS = [
@@ -21,14 +21,18 @@ const NAV_ITEMS = [
 export default function MobileNav() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [user, setUser] = useState(getCurrentUser());
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => {
+    getCurrentUser().then(setUser);
+    getCart().then(c => setCartCount(c.reduce((sum, item) => sum + item.quantity, 0)));
+  }, []);
   const [cartCount, setCartCount] = useState(0);
   const [showProfileSheet, setShowProfileSheet] = useState(false);
 
   useEffect(() => {
-    const update = () => {
+    const update = async () => {
       setUser(getCurrentUser());
-      const cart = getCart();
+      const cart = await getCart();
       setCartCount(cart.reduce((s, i) => s + i.quantity, 0));
     };
     update();
@@ -51,8 +55,8 @@ export default function MobileNav() {
     return location.pathname.startsWith(item.path);
   };
 
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    await logoutUser();
     setUser(null);
     setShowProfileSheet(false);
     toast.success("Logged out successfully");

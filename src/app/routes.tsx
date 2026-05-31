@@ -1,4 +1,4 @@
-import { createBrowserRouter, Outlet } from "react-router";
+import { createBrowserRouter, Outlet, ScrollRestoration } from "react-router";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
@@ -6,7 +6,6 @@ import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AIDoctorPage from "./pages/AIDoctorPage";
-import ScrollToTop from "./components/ScrollToTop";
 
 // Admin
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -32,7 +31,7 @@ export const router = createBrowserRouter([
     path: "/",
     element: (
       <>
-        <ScrollToTop />
+        <ScrollRestoration />
         <Outlet />
       </>
     ),

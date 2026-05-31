@@ -1,4 +1,4 @@
-import { Product } from "../utils/localStorage";
+import { Product } from "../utils/api";
 
 export const categories = [
   { id: "prescription-medicine", name: "Prescription Medicine", icon: "pill" },

@@ -11,7 +11,7 @@ import {
 import {
   getCart, updateCartQuantity, removeFromCart,
   clearCart, CartItem,
-} from "../utils/localStorage";
+} from "../utils/api";
 import { toast } from "sonner";
 
 const PROMO_CODES: Record<string, number> = {
@@ -32,10 +32,10 @@ export default function Cart() {
 
   useEffect(() => { loadCart(); }, []);
 
-  const loadCart = () => setCartItems(getCart());
+  const loadCart = () => getCart().then(setCartItems);
 
-  const handleUpdateQuantity = (id: string, qty: number) => {
-    updateCartQuantity(id, qty);
+  const handleUpdateQuantity = async (id: string, qty: number) => {
+    await updateCartQuantity(id, qty);
     loadCart();
     window.dispatchEvent(new Event("cartUpdated"));
   };
@@ -43,15 +43,15 @@ export default function Cart() {
   const handleRemove = async (id: string, name: string) => {
     setRemovingId(id);
     await new Promise(r => setTimeout(r, 300));
-    removeFromCart(id);
+    await removeFromCart(id);
     loadCart();
     setRemovingId(null);
     toast.success(`${name} removed`);
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
-  const handleClearCart = () => {
-    clearCart();
+  const handleClearCart = async () => {
+    await clearCart();
     loadCart();
     setAppliedPromo(null);
     toast.success("Cart cleared");
@@ -345,7 +345,7 @@ export default function Cart() {
             <div className="flex-1">
               <div className="flex items-center justify-between text-xs text-slate-500 mb-0.5">
                 <span>{cartItems.length} item{cartItems.length !== 1 ? "s" : ""}</span>
-                <span>{shipping === 0 ? "🎉 Free delivery" : `+৳${shipping.toFixed(2)} delivery`}</span>
+                <span>{shipping === 0 ? "Free delivery" : `+৳${shipping.toFixed(2)} delivery`}</span>
               </div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-slate-400 text-xs">Total</span>
@@ -399,8 +399,8 @@ function OrderSummary({
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-slate-600">Delivery</span>
-          <span className={shipping === 0 ? "text-green-600" : "text-slate-700"} style={{ fontWeight: 600 }}>
-            {shipping === 0 ? "FREE 🎉" : `৳${shipping.toFixed(2)}`}
+          <span className={shipping === 0 ? "text-green-600 font-bold" : ""}>
+            {shipping === 0 ? "FREE" : `৳${shipping.toFixed(2)}`}
           </span>
         </div>
         {subtotal > 0 && subtotal < 50 && (

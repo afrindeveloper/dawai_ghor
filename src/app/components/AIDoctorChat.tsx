@@ -2,8 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   X, Send, Bot, User, Pill, CheckCircle, AlertTriangle,
-  Sparkles, Stethoscope, Activity, Zap, ChevronRight
+  Sparkles, Stethoscope, Activity, Zap, ChevronRight,
+  Thermometer, Wind, Brain, ShieldAlert, Moon
 } from "lucide-react";
+import { getDoctorChatResponse, ChatMessageData } from "../utils/gemini";
 
 interface ChatMessage {
   id: string;
@@ -21,100 +23,21 @@ interface AIDoctorChatProps {
   onClose: () => void;
 }
 
-const QUICK_SYMPTOMS = [
-  { label: "🤒 Fever", query: "I have a fever" },
-  { label: "🤧 Cough", query: "I have a cough" },
-  { label: "🤕 Headache", query: "I have a headache" },
-  { label: "🤢 Stomach", query: "I have stomach pain" },
-  { label: "😴 Fatigue", query: "I feel very tired and weak" },
-  { label: "🤧 Allergy", query: "I have allergy symptoms" },
+const SYMPTOM_SUGGESTIONS = [
+  { icon: Thermometer, label: "Fever", query: "I have a fever" },
+  { icon: Wind, label: "Cough", query: "I have a cough" },
+  { icon: Brain, label: "Headache", query: "I have a headache" },
+  { icon: ShieldAlert, label: "Stomach", query: "I have stomach pain" },
+  { icon: Moon, label: "Fatigue", query: "I feel very tired and weak" },
+  { icon: Activity, label: "Allergy", query: "I have allergy symptoms" },
 ];
 
-function getResponse(text: string): Omit<ChatMessage, "id" | "type" | "timestamp"> {
-  const lower = text.toLowerCase();
-  if (lower.includes("fever") || lower.includes("temperature")) {
-    return {
-      text: "I see you have a fever. Based on your symptoms, here are my recommendations:",
-      medicines: [
-        { name: "Napa 500mg (Paracetamol)", dosage: "1 tab every 6 hrs", price: "৳12" },
-        { name: "Napryn 200mg (Ibuprofen)", dosage: "1 tab every 8 hrs with food", price: "৳18" },
-      ],
-      tips: ["Rest and hydrate well", "Monitor temp every 4 hrs", "Cool damp cloth on forehead"],
-      severity: "moderate",
-      quickReplies: ["Fever with body ache?", "Fever in child?", "When to go to ER?"],
-    };
-  }
-  if (lower.includes("cough")) {
-    return {
-      text: "For your cough, the treatment depends on whether it's dry or wet. Here are some options:",
-      medicines: [
-        { name: "Tussitab Syrup (Dextromethorphan)", dosage: "2 tsp every 8 hrs", price: "৳45" },
-        { name: "Ambroxol 30mg", dosage: "1 tab 3x daily", price: "৳22" },
-      ],
-      tips: ["Drink warm water with honey", "Use steam inhalation", "Avoid cold drinks"],
-      severity: "low",
-      quickReplies: ["Dry or wet cough?", "Cough with fever?", "Kids cough syrup?"],
-    };
-  }
-  if (lower.includes("headache") || lower.includes("migraine")) {
-    return {
-      text: "Headaches are common and usually manageable. Based on your description:",
-      medicines: [
-        { name: "Napa Extra (Paracetamol+Caffeine)", dosage: "1-2 tabs as needed", price: "৳15" },
-        { name: "Ibuprofen 400mg", dosage: "1 tab every 8 hrs with food", price: "৳20" },
-      ],
-      tips: ["Rest in a quiet, dark room", "Stay hydrated", "Apply cold compress to neck"],
-      severity: "low",
-      quickReplies: ["Is this a migraine?", "Morning headaches?", "Headache + nausea?"],
-    };
-  }
-  if (lower.includes("stomach") || lower.includes("gastric") || lower.includes("acidity")) {
-    return {
-      text: "Stomach issues are very common. Here's what I recommend for gastric pain or acidity:",
-      medicines: [
-        { name: "Omeprazole 20mg", dosage: "1 capsule before breakfast", price: "৳25" },
-        { name: "Antacid Plus", dosage: "2 tabs after meals", price: "৳8" },
-      ],
-      tips: ["Avoid spicy and oily food", "Eat smaller meals", "Don't lie down right after eating"],
-      severity: "low",
-      quickReplies: ["How to reduce acidity?", "Stomach cramps?", "Bloating & gas?"],
-    };
-  }
-  if (lower.includes("tired") || lower.includes("weak") || lower.includes("fatigue") || lower.includes("vitamin")) {
-    return {
-      text: "Fatigue and weakness could indicate vitamin deficiency. Here are helpful supplements:",
-      medicines: [
-        { name: "A to Z Multivitamin", dosage: "1 tab daily with breakfast", price: "৳180" },
-        { name: "Vitamin D3 1000IU", dosage: "1 capsule daily", price: "৳95" },
-      ],
-      tips: ["Get daily sunlight exposure", "Eat a balanced diet", "Get 7-8 hours of sleep"],
-      severity: "low",
-      quickReplies: ["Vitamin D deficiency signs?", "Iron deficiency?", "Best time for vitamins?"],
-    };
-  }
-  if (lower.includes("allergy") || lower.includes("sneez") || lower.includes("watery")) {
-    return {
-      text: "Your symptoms suggest an allergic reaction. Antihistamines are the first line treatment:",
-      medicines: [
-        { name: "Fexo 120mg (Fexofenadine)", dosage: "1 tab daily — non-drowsy", price: "৳35" },
-        { name: "Cetirizine 10mg", dosage: "1 tab at night", price: "৳15" },
-      ],
-      tips: ["Identify and avoid triggers", "Keep windows closed in pollen season", "Use air purifier indoors"],
-      severity: "low",
-      quickReplies: ["Allergy vs cold?", "Food allergy symptoms?", "Allergy eye drops?"],
-    };
-  }
-  return {
-    text: "I understand. To give you better advice, could you describe your main symptoms more specifically? You can also choose from the quick options below.",
-    quickReplies: ["I have a fever", "I have a headache", "Stomach pain & acidity", "I feel very tired"],
-  };
-}
 
 export default function AIDoctorChat({ isOpen, onClose }: AIDoctorChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([{
     id: "init",
     type: "bot",
-    text: "Hello! I'm **Dr. DawaiAI** 👋 — your intelligent health assistant. Tell me your symptoms and I'll recommend the right medicines and care tips.",
+    text: "Hello! I'm **Dr. DawaiAI** — your intelligent health assistant. Tell me your symptoms and I'll recommend the right medicines and care tips.",
     timestamp: new Date(),
     quickReplies: ["I have a fever", "Headache", "Stomach pain", "Feeling tired"],
   }]);
@@ -124,17 +47,29 @@ export default function AIDoctorChat({ isOpen, onClose }: AIDoctorChatProps) {
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isTyping]);
 
-  const sendMessage = (text?: string) => {
+  const sendMessage = async (text?: string) => {
     const msg = text || input.trim();
     if (!msg) return;
     setInput("");
     setMessages(prev => [...prev, { id: `u-${Date.now()}`, type: "user", text: msg, timestamp: new Date() }]);
     setIsTyping(true);
-    setTimeout(() => {
-      const res = getResponse(msg);
-      setMessages(prev => [...prev, { id: `b-${Date.now()}`, type: "bot", timestamp: new Date(), ...res }]);
+    
+    try {
+      const history: ChatMessageData[] = messages
+        .filter(m => m.id !== "init")
+        .map(m => ({
+          role: m.type === "bot" ? "model" : "user",
+          parts: [{ text: m.text }],
+        }));
+
+      const aiText = await getDoctorChatResponse(history, msg);
+
+      setMessages(prev => [...prev, { id: `b-${Date.now()}`, type: "bot", text: aiText, timestamp: new Date() }]);
+    } catch (error) {
+      console.error(error);
+    } finally {
       setIsTyping(false);
-    }, 1200);
+    }
   };
 
   const formatText = (text: string) =>
@@ -214,13 +149,14 @@ export default function AIDoctorChat({ isOpen, onClose }: AIDoctorChatProps) {
           {/* Quick Symptom Chips */}
           <div className="px-4 py-2.5 border-b border-slate-100 bg-slate-50 flex-shrink-0">
             <div className="flex gap-2 overflow-x-auto scrollbar-none">
-              {QUICK_SYMPTOMS.map(s => (
+              {SYMPTOM_SUGGESTIONS.map(s => (
                 <button
                   key={s.label}
                   onClick={() => sendMessage(s.query)}
-                  className="flex-shrink-0 px-3 py-1.5 bg-white border border-slate-200 hover:border-orange-300 hover:bg-orange-50 rounded-full text-xs text-slate-600 hover:text-orange-600 transition-all shadow-sm whitespace-nowrap"
+                  className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:border-orange-300 hover:bg-orange-50 rounded-full text-xs text-slate-600 hover:text-orange-600 transition-all shadow-sm whitespace-nowrap"
                   style={{ fontWeight: 500 }}
                 >
+                  <s.icon className="w-3 h-3" />
                   {s.label}
                 </button>
               ))}

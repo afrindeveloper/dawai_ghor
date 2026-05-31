@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { ShoppingBag, Package, Truck, CheckCircle, Clock, XCircle, Eye } from "lucide-react";
-import { getCurrentUser, getUserOrders, Order } from "../../utils/localStorage";
+import { getCurrentUser, getUserOrders, Order } from "../../utils/api";
 import { motion, AnimatePresence } from "motion/react";
 
 const statusConfig: Record<string, { label: string; color: string; bg: string; icon: React.ComponentType<{ className?: string }> }> = {
@@ -13,13 +13,14 @@ const statusConfig: Record<string, { label: string; color: string; bg: string; i
 };
 
 export default function UserOrders() {
-  const user = getCurrentUser();
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => { getCurrentUser().then(setUser); }, []);
   const [orders, setOrders] = useState<Order[]>([]);
   const [filter, setFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
-    if (user) setOrders(getUserOrders(user.id));
+    if (user) getUserOrders(user.id).then(setOrders);
   }, [user?.id]);
 
   const filtered = filter === "all" ? orders : orders.filter(o => o.status === filter);
@@ -162,6 +163,27 @@ export default function UserOrders() {
                   </div>
                 ))}
               </div>
+              
+              {selectedOrder.items && selectedOrder.items.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="text-sm font-semibold text-slate-800 mb-2">Order Items</h4>
+                  <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                    {selectedOrder.items.map(item => (
+                      <div key={item.id} className="flex justify-between items-center text-sm border-b border-slate-100 pb-2">
+                        <div className="flex items-center gap-3">
+                          <img src={item.image} alt={item.name} className="w-10 h-10 rounded-lg object-cover border border-slate-100" />
+                          <div>
+                            <p className="text-slate-700" style={{ fontWeight: 600 }}>{item.name}</p>
+                            <p className="text-slate-400 text-xs">Qty: {item.quantity}</p>
+                          </div>
+                        </div>
+                        <span className="text-slate-900" style={{ fontWeight: 600 }}>${(item.price * item.quantity).toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="bg-orange-50 rounded-xl p-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600">Subtotal</span>

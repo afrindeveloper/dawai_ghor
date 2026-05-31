@@ -5,7 +5,7 @@ import {
   Mail, Lock, Eye, EyeOff, AlertCircle, ArrowRight,
   ShieldCheck, Sparkles, ChevronLeft, Stethoscope, Star
 } from "lucide-react";
-import { loginUser } from "../utils/localStorage";
+import { loginUser } from "../utils/api";
 import { toast } from "sonner";
 
 export default function Login() {
@@ -22,7 +22,7 @@ export default function Login() {
     setError("");
     setLoading(true);
     await new Promise(r => setTimeout(r, 700));
-    const user = loginUser(email, password);
+    const user = await loginUser(email, password);
     setLoading(false);
     if (user) {
       window.dispatchEvent(new Event("userUpdated"));
@@ -114,7 +114,7 @@ export default function Login() {
 
           {/* Footer stat strip */}
           <div className="grid grid-cols-3 gap-3 pt-8 border-t border-white/10">
-            {[{ val: "10K+", lbl: "Happy Users" }, { val: "500+", lbl: "Medicines" }, { val: "4.9★", lbl: "App Rating" }].map(s => (
+              {[{ val: "10K+", lbl: "Happy Users" }, { val: "500+", lbl: "Medicines" }, { val: "4.9/5", lbl: "App Rating" }].map(s => (
               <div key={s.lbl}>
                 <p className="text-white text-xl" style={{ fontWeight: 800 }}>{s.val}</p>
                 <p className="text-slate-400 text-xs">{s.lbl}</p>

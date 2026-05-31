@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { ShoppingBag, Heart, Package, TrendingUp, ArrowRight, Clock, CheckCircle, Truck } from "lucide-react";
-import { getCurrentUser, getUserOrders, getWishlist, Order } from "../../utils/localStorage";
+import { ShoppingBag, Heart, Package, TrendingUp, ArrowRight, Clock, CheckCircle, Truck, Pill, Bot, FileText } from "lucide-react";
+import { getCurrentUser, getUserOrders, getWishlist, Order } from "../../utils/api";
 import { motion } from "motion/react";
 
 const statusConfig: Record<string, { label: string; color: string; bg: string; icon: React.ComponentType<{ className?: string }> }> = {
@@ -13,17 +13,19 @@ const statusConfig: Record<string, { label: string; color: string; bg: string; i
 };
 
 export default function UserDashboard() {
-  const user = getCurrentUser();
+  const [user, setUser] = useState<any>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [wishlistCount, setWishlistCount] = useState(0);
 
   useEffect(() => {
-    if (user) {
-      const userOrders = getUserOrders(user.id);
-      setOrders(userOrders);
-      setWishlistCount(getWishlist().length);
-    }
-  }, [user?.id]);
+    getCurrentUser().then(u => {
+      setUser(u);
+      if (u) {
+        getUserOrders(u.id).then(setOrders);
+        getWishlist().then(list => setWishlistCount(list.length));
+      }
+    });
+  }, []);
 
   const totalSpent = orders.reduce((sum, o) => o.status !== "cancelled" ? sum + o.total : sum, 0);
   const recentOrders = orders.slice(0, 4);
@@ -48,7 +50,7 @@ export default function UserDashboard() {
         </div>
         <div className="relative">
           <p className="text-orange-100 text-sm mb-1">Welcome back,</p>
-          <h2 className="text-2xl text-white" style={{ fontWeight: 700 }}>{user?.name} 👋</h2>
+          <h2 className="text-2xl text-white" style={{ fontWeight: 700 }}>{user?.name}</h2>
           <p className="text-orange-100 text-sm mt-2">You're a valued DawaiGhor member. Here's your health activity.</p>
           <Link
             to="/products"
@@ -135,9 +137,9 @@ export default function UserDashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { title: "Browse Medicines", desc: "Explore 20+ products", link: "/products", icon: "💊", color: "from-orange-400 to-orange-600" },
-          { title: "AI Doctor Chat", desc: "Get instant health advice", link: "/", icon: "🤖", color: "from-blue-400 to-blue-600" },
-          { title: "Upload Prescription", desc: "Order from prescription", link: "/", icon: "📋", color: "from-green-400 to-green-600" },
+          { title: "Browse Medicines", desc: "Explore 20+ products", link: "/products", icon: Pill, color: "from-orange-400 to-orange-600" },
+          { title: "AI Doctor Chat", desc: "Get instant health advice", link: "/ai-doctor", icon: Bot, color: "from-blue-400 to-blue-600" },
+          { title: "Upload Prescription", desc: "Order from prescription", link: "/dashboard/prescriptions", icon: FileText, color: "from-green-400 to-green-600" },
         ].map((action, i) => (
           <motion.div
             key={action.title}
@@ -149,7 +151,7 @@ export default function UserDashboard() {
               to={action.link}
               className={`block bg-gradient-to-br ${action.color} rounded-2xl p-5 text-white hover:shadow-lg hover:-translate-y-0.5 transition-all`}
             >
-              <span className="text-3xl">{action.icon}</span>
+              <span className="text-3xl"><action.icon className="w-8 h-8 text-white" /></span>
               <p className="mt-3 text-white" style={{ fontWeight: 600 }}>{action.title}</p>
               <p className="text-white/70 text-sm mt-0.5">{action.desc}</p>
             </Link>

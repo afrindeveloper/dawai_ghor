@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User, Mail, Phone, MapPin, Calendar, Save, Lock, Eye, EyeOff } from "lucide-react";
-import { getCurrentUser, saveCurrentUser, saveAllUsers, getAllUsers } from "../../utils/localStorage";
+import { getCurrentUser, saveCurrentUser, saveAllUsers, getAllUsers } from "../../utils/api";
 import { toast } from "sonner";
 import { motion } from "motion/react";
 
 export default function UserProfile() {
-  const user = getCurrentUser();
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => { getCurrentUser().then(setUser); }, []);
   const [profile, setProfile] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -15,13 +16,13 @@ export default function UserProfile() {
   const [passwords, setPasswords] = useState({ current: "", newPass: "", confirm: "" });
   const [showPasswords, setShowPasswords] = useState({ current: false, new: false, confirm: false });
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     if (!profile.name || !profile.email) { toast.error("Name and email are required"); return; }
     if (!user) return;
     const updatedUser = { ...user, ...profile };
-    saveCurrentUser(updatedUser);
+    await saveCurrentUser(updatedUser);
     // Also update in the all users list
-    const users = getAllUsers();
+    const users = await getAllUsers();
     const updated = users.map(u => u.id === user.id ? updatedUser : u);
     saveAllUsers(updated);
     toast.success("Profile updated successfully!");

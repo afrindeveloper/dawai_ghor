@@ -6,7 +6,7 @@ import {
   AlertCircle, ArrowRight, ChevronLeft, CheckCircle,
   Sparkles, Shield, Star, Heart, Package
 } from "lucide-react";
-import { registerNewUser } from "../utils/localStorage";
+import { registerNewUser } from "../utils/api";
 import { toast } from "sonner";
 
 const PASSWORD_RULES = [

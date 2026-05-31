@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router";
 import {
   LayoutDashboard, ShoppingBag, Heart, FileText,
-  Settings, LogOut, Menu, X, User, ChevronRight, Home
+  Settings, LogOut, Menu, X, User, ChevronRight, Home, Bot
 } from "lucide-react";
-import { getCurrentUser, logoutUser } from "../../utils/localStorage";
+import { getCurrentUser, logoutUser } from "../../utils/api";
 import { motion, AnimatePresence } from "motion/react";
 
 const navItems = [
   { path: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
+  { path: "/ai-doctor", label: "AI Doctor Chat", icon: Bot },
   { path: "/dashboard/orders", label: "My Orders", icon: ShoppingBag },
   { path: "/dashboard/wishlist", label: "Wishlist", icon: Heart },
   { path: "/dashboard/prescriptions", label: "Prescriptions", icon: FileText },
@@ -19,14 +20,15 @@ export default function UserLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const user = getCurrentUser();
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => { getCurrentUser().then(setUser); }, []);
 
   useEffect(() => {
     if (!user) navigate("/login");
   }, [user, navigate]);
 
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    await logoutUser();
     navigate("/login");
   };
 

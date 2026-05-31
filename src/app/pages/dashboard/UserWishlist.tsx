@@ -1,31 +1,40 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { Heart, ShoppingCart, Trash2, Star } from "lucide-react";
-import { getWishlist, toggleWishlist, addToCart, getManagedProducts } from "../../utils/localStorage";
+import { getWishlist, toggleWishlist, addToCart, getManagedProducts } from "../../utils/api";
 import { products as defaultProducts } from "../../data/mockData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 
 export default function UserWishlist() {
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const [allProducts, setAllProducts] = useState<typeof defaultProducts>([]);
 
   useEffect(() => {
-    setWishlistIds(getWishlist());
+    getWishlist().then(setWishlistIds);
+    getManagedProducts(defaultProducts).then(setAllProducts);
   }, []);
 
-  const allProducts = getManagedProducts(defaultProducts);
   const wishlistProducts = allProducts.filter(p => wishlistIds.includes(p.id));
 
-  const handleRemove = (productId: string) => {
-    toggleWishlist(productId);
-    setWishlistIds(getWishlist());
+  const handleRemove = async (productId: string) => {
+    await toggleWishlist(productId);
+    const updated = await getWishlist();
+    setWishlistIds(updated);
     toast.success("Removed from wishlist");
   };
 
-  const handleAddToCart = (product: typeof allProducts[0]) => {
-    addToCart(product);
-    toast.success(`${product.name} added to cart!`);
+  const handleAddToCart = async (product: typeof defaultProducts[0]) => {
+    await addToCart(product);
     window.dispatchEvent(new Event("cartUpdated"));
+    toast.success(`${product.name} added to cart!`);
+  };
+
+  const handleAddAllToCart = async () => {
+    if (wishlistProducts.length === 0) return;
+    await Promise.all(wishlistProducts.map(p => addToCart(p)));
+    window.dispatchEvent(new Event("cartUpdated"));
+    toast.success("All items added to cart!");
   };
 
   return (
@@ -37,11 +46,7 @@ export default function UserWishlist() {
         </div>
         {wishlistProducts.length > 0 && (
           <button
-            onClick={() => {
-              wishlistProducts.forEach(p => addToCart(p));
-              toast.success("All items added to cart!");
-              window.dispatchEvent(new Event("cartUpdated"));
-            }}
+            onClick={handleAddAllToCart}
             className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2.5 rounded-xl text-sm transition-colors"
             style={{ fontWeight: 600 }}
           >

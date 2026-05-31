@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Search, Eye, ChevronDown, Package } from "lucide-react";
-import { getOrders, saveOrders, Order } from "../../utils/localStorage";
+import { getOrders, saveOrders, Order } from "../../utils/api";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -21,7 +21,7 @@ export default function AdminOrders() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
-    setOrders(getOrders());
+    getOrders().then(setOrders);
   }, []);
 
   const filtered = orders.filter(o => {
@@ -33,11 +33,14 @@ export default function AdminOrders() {
     return matchSearch && matchStatus;
   });
 
-  const updateStatus = (id: string, status: Order["status"]) => {
+  const updateStatus = async (id: string, status: Order["status"]) => {
     const updated = orders.map(o => o.id === id ? { ...o, status } : o);
     setOrders(updated);
-    saveOrders(updated);
     if (selectedOrder?.id === id) setSelectedOrder({ ...selectedOrder, status });
+    // Assuming API has an endpoint to update single order, but saveOrders is handled per order.
+    // updateOrder in api.ts could be added here if needed
+    // Let's just update local state and toast for now, actually we should update backend.
+    await fetch(`/api/orders/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) });
     toast.success(`Order status updated to ${status}`);
   };
 

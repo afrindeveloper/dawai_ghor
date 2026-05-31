@@ -3,7 +3,7 @@ import {
   Search, Plus, Edit2, Trash2, Package, Star, Tag,
   AlertCircle, CheckCircle, Filter
 } from "lucide-react";
-import { getManagedProducts, saveAdminProducts, Product } from "../../utils/localStorage";
+import { getManagedProducts, saveAdminProducts, Product, updateProduct, addProduct } from "../../utils/api";
 import { products as defaultProducts } from "../../data/mockData";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
@@ -25,7 +25,7 @@ export default function AdminMedicines() {
   const [formData, setFormData] = useState<Omit<Product, "id">>(emptyProduct);
 
   useEffect(() => {
-    setProducts(getManagedProducts(defaultProducts));
+    getManagedProducts(defaultProducts).then(setProducts);
   }, []);
 
   const filtered = products.filter(p => {
@@ -48,33 +48,37 @@ export default function AdminMedicines() {
     setShowModal(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name || !formData.price) { toast.error("Name and price are required"); return; }
     let updated: Product[];
     if (editingProduct) {
       updated = products.map(p => p.id === editingProduct.id ? { ...formData, id: editingProduct.id } : p);
+      await updateProduct(editingProduct.id, formData);
       toast.success("Medicine updated successfully");
     } else {
-      const newProduct: Product = { ...formData, id: `prod-${Date.now()}` };
-      updated = [...products, newProduct];
+      const added = await addProduct(formData);
+      updated = [...products, added];
       toast.success("Medicine added successfully");
     }
     setProducts(updated);
-    saveAdminProducts(updated);
     setShowModal(false);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     const updated = products.filter(p => p.id !== id);
     setProducts(updated);
-    saveAdminProducts(updated);
+    // Ideally await deleteProduct(id);
+    await fetch(`/api/products/${id}`, { method: 'DELETE' }).catch(() => {});
     toast.success("Medicine removed");
   };
 
-  const toggleStock = (id: string) => {
-    const updated = products.map(p => p.id === id ? { ...p, inStock: !p.inStock } : p);
+  const toggleStock = async (id: string) => {
+    const target = products.find(p => p.id === id);
+    if (!target) return;
+    const inStock = !target.inStock;
+    const updated = products.map(p => p.id === id ? { ...p, inStock } : p);
     setProducts(updated);
-    saveAdminProducts(updated);
+    await updateProduct(id, { inStock });
     toast.success("Stock status updated");
   };
 

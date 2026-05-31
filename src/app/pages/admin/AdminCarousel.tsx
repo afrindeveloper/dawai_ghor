@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getCarousel, saveCarousel, CarouselSlide } from "../../utils/localStorage";
+import { getCarousel, saveCarousel, CarouselSlide } from "../../utils/api";
 import { toast } from "sonner";
 import { 
   Plus, Layers, CheckCircle, EyeOff, GripVertical, 
@@ -27,8 +27,9 @@ export default function AdminCarousel() {
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
-    const loaded = getCarousel().sort((a, b) => a.order - b.order);
-    setSlides(loaded);
+    getCarousel().then(loaded => {
+      setSlides(loaded.sort((a, b) => a.order - b.order));
+    });
   }, []);
 
   const persist = (updated: CarouselSlide[]) => {

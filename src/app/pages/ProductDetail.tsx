@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import {
-  ArrowLeft, Star, ShoppingCart, Heart, Shield, Truck,
+  ArrowLeft, Star, ShoppingCart, Heart, Shield, Truck, CheckCircle, Pill,
   Package, Tag, Minus, Plus, Share2, ChevronRight, AlertCircle
 } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import PromoBanner from "../components/PromoBanner";
-import {
-  addToCart, toggleWishlist, isInWishlist, getManagedProducts
-} from "../utils/localStorage";
+import { getWishlist, addToCart, toggleWishlist, getManagedProducts } from "../utils/api";
 import { products as defaultProducts } from "../data/mockData";
 import { toast } from "sonner";
 import { motion } from "motion/react";
@@ -22,11 +20,18 @@ export default function ProductDetail() {
   const [activeTab, setActiveTab] = useState(0);
   const [wishlisted, setWishlisted] = useState(false);
 
-  const allProducts = getManagedProducts(defaultProducts);
+  const [allProducts, setAllProducts] = useState<typeof defaultProducts>([]);
+
+  useEffect(() => {
+    getManagedProducts(defaultProducts).then(setAllProducts);
+  }, []);
+
   const product = allProducts.find(p => p.id === id);
 
   useEffect(() => {
-    if (id) setWishlisted(isInWishlist(id));
+    if (id) {
+       getWishlist().then(list => setWishlisted(list.includes(id)));
+    }
   }, [id]);
 
   if (!product) {
@@ -58,14 +63,15 @@ export default function ProductDetail() {
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 
-  const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) addToCart(product);
+  const handleAddToCart = async () => {
+    for (let i = 0; i < quantity; i++) await addToCart(product);
     toast.success(`${quantity}x ${product.name} added to cart!`);
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
-  const handleWishlist = () => {
-    const now = toggleWishlist(product.id);
+  const handleWishlist = async () => {
+    if (!product) return;
+    const now = await toggleWishlist(product.id);
     setWishlisted(now);
     toast.success(now ? "Added to wishlist!" : "Removed from wishlist");
   };
@@ -153,8 +159,8 @@ export default function ProductDetail() {
     // Brand Info
     <div className="space-y-4">
       <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-orange-100">
-        <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm flex-shrink-0">
-          💊
+        <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
+          <Pill className="w-7 h-7 text-orange-500" />
         </div>
         <div>
           <h4 className="text-slate-900" style={{ fontWeight: 700 }}>{product.brand || "Unknown Brand"}</h4>
@@ -234,8 +240,8 @@ export default function ProductDetail() {
                 <span className="bg-orange-100 text-orange-700 text-sm px-3 py-1 rounded-full" style={{ fontWeight: 600 }}>
                   {product.category}
                 </span>
-                <span className={`text-xs px-2.5 py-1 rounded-full ${product.inStock !== false ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`} style={{ fontWeight: 500 }}>
-                  {product.inStock !== false ? "✓ In Stock" : "✗ Out of Stock"}
+                <span className={`text-xs px-2.5 py-1 rounded-full flex items-center gap-1 ${product.inStock !== false ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`} style={{ fontWeight: 500 }}>
+                  {product.inStock !== false ? <><CheckCircle className="w-3.5 h-3.5" /> In Stock</> : <><AlertCircle className="w-3.5 h-3.5" /> Out of Stock</>}
                 </span>
               </div>
 

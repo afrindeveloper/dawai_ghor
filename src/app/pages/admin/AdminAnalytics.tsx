@@ -47,7 +47,7 @@ export default function AdminAnalytics() {
     { label: "Total Revenue", value: "$52,100", change: "+23%", up: true, icon: DollarSign, color: "text-green-600", bg: "bg-green-50" },
     { label: "Total Orders", value: "483", change: "+18%", up: true, icon: ShoppingBag, color: "text-blue-600", bg: "bg-blue-50" },
     { label: "New Users", value: "160", change: "+31%", up: true, icon: Users, color: "text-purple-600", bg: "bg-purple-50" },
-    { label: "Avg. Rating", value: "4.6 ★", change: "+0.2", up: true, icon: Star, color: "text-yellow-600", bg: "bg-yellow-50" },
+    { label: "Avg. Rating", value: "4.6/5", change: "+0.2", up: true, icon: Star, color: "text-yellow-600", bg: "bg-yellow-50" },
   ];
 
   return (
@@ -202,7 +202,7 @@ export default function AdminAnalytics() {
                 </div>
                 <div className="text-right flex-shrink-0">
                   <p className="text-slate-900 text-sm" style={{ fontWeight: 600 }}>${product.revenue.toFixed(0)}</p>
-                  <p className="text-yellow-500 text-xs">★ {product.rating}</p>
+                  <p className="text-yellow-500 text-xs flex items-center gap-1"><Star className="w-3 h-3 fill-current" /> {product.rating}</p>
                 </div>
               </div>
             ))}

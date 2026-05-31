@@ -9,7 +9,7 @@ import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis,
   CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
-import { getAllUsers, getOrders, getMessages, getOrders as getOrdersData } from "../../utils/localStorage";
+import { getAllUsers, getOrders, getMessages, Order, Message } from "../../utils/api";
 import { motion } from "motion/react";
 
 const revenueData = [
@@ -43,19 +43,23 @@ export default function AdminDashboard() {
     users: 0, orders: 0, revenue: 0, messages: 0,
     pendingOrders: 0, unreadMessages: 0,
   });
-  const [recentOrders, setRecentOrders] = useState<ReturnType<typeof getOrdersData>>([]);
-  const [recentMessages, setRecentMessages] = useState<ReturnType<typeof getMessages>>([]);
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [recentMessages, setRecentMessages] = useState<Message[]>([]);
 
   useEffect(() => {
-    const users = getAllUsers().filter(u => u.role === "user");
-    const orders = getOrders();
-    const messages = getMessages();
-    const revenue = orders.reduce((sum, o) => sum + o.total, 0);
-    const pendingOrders = orders.filter(o => o.status === "pending" || o.status === "processing").length;
-    const unreadMessages = messages.filter(m => !m.read).length;
-    setStats({ users: users.length, orders: orders.length, revenue, messages: messages.length, pendingOrders, unreadMessages });
-    setRecentOrders(orders.slice(0, 5));
-    setRecentMessages(messages.slice(0, 4));
+    async function loadData() {
+      const allUsers = await getAllUsers();
+      const users = allUsers.filter(u => u.role === "user");
+      const orders = await getOrders();
+      const messages = await getMessages();
+      const revenue = orders.reduce((sum, o) => sum + o.total, 0);
+      const pendingOrders = orders.filter(o => o.status === "pending" || o.status === "processing").length;
+      const unreadMessages = messages.filter(m => !m.read).length;
+      setStats({ users: users.length, orders: orders.length, revenue, messages: messages.length, pendingOrders, unreadMessages });
+      setRecentOrders(orders.slice(0, 5));
+      setRecentMessages(messages.slice(0, 4));
+    }
+    loadData();
   }, []);
 
   const statCards = [
@@ -70,7 +74,7 @@ export default function AdminDashboard() {
       {/* Welcome */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl text-slate-900" style={{ fontWeight: 700 }}>Welcome back, Admin! 👋</h2>
+          <h2 className="text-2xl text-slate-900" style={{ fontWeight: 700 }}>Welcome back, Admin!</h2>
           <p className="text-slate-500 mt-1">Here's what's happening with DawaiGhor today.</p>
         </div>
         <Link to="/admin/orders" className="hidden sm:flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors text-sm" style={{ fontWeight: 600 }}>

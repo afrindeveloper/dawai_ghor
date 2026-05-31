@@ -5,7 +5,7 @@ import {
   BarChart3, Settings, LogOut, Menu, X, Bell, ChevronRight,
   Package, TrendingUp, Images
 } from "lucide-react";
-import { getCurrentUser, logoutUser } from "../../utils/localStorage";
+import { getCurrentUser, logoutUser } from "../../utils/api";
 import { motion, AnimatePresence } from "motion/react";
 
 const navItems = [
@@ -24,7 +24,8 @@ export default function AdminLayout() {
   const [mobileSidebar, setMobileSidebar] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const user = getCurrentUser();
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => { getCurrentUser().then(setUser); }, []);
 
   useEffect(() => {
     if (!user || user.role !== "admin") {
@@ -32,8 +33,8 @@ export default function AdminLayout() {
     }
   }, [user, navigate]);
 
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    await logoutUser();
     navigate("/login");
   };
 

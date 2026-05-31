@@ -26,7 +26,7 @@ export default function StatsSection() {
     },
     {
       icon: Star,
-      value: "4.9★",
+      value: "4.9",
       label: "Average Rating",
       color: "text-yellow-500",
       bg: "bg-yellow-50",
@@ -34,7 +34,7 @@ export default function StatsSection() {
   ];
 
   return (
-    <section className="relative z-20 -mt-12 mb-12 container mx-auto px-4">
+    <section className="relative z-20 my-12 container mx-auto px-4">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}

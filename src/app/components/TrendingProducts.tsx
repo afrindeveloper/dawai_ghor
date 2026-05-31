@@ -2,17 +2,17 @@ import { motion } from "motion/react";
 import { ShoppingCart, Star, ChevronRight } from "lucide-react";
 import { Link } from "react-router";
 import { products } from "../data/mockData";
-import { addToCart } from "../utils/localStorage";
+import { addToCart } from "../utils/api";
 import { toast } from "sonner";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 export default function TrendingProducts() {
-  const trendingProducts = products.slice(0, 5);
+  const trendingProducts = products.slice(0, 10);
 
-  const handleAddToCart = (product: typeof products[0], e: React.MouseEvent) => {
+  const handleAddToCart = async (product: typeof products[0], e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product);
+    await addToCart(product);
     toast.success(`${product.name} added to cart!`);
     window.dispatchEvent(new Event("cartUpdated"));
   };

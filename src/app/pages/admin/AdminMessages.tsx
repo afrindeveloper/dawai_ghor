@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Search, Mail, MailOpen, Reply, Trash2, CheckCircle, MessageSquare } from "lucide-react";
-import { getMessages, saveMessages, Message } from "../../utils/localStorage";
+import { getMessages, saveMessages, Message } from "../../utils/api";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -12,8 +12,7 @@ export default function AdminMessages() {
   const [replyText, setReplyText] = useState("");
 
   useEffect(() => {
-    const msgs = getMessages();
-    setMessages(msgs);
+    getMessages().then(setMessages);
   }, []);
 
   const filtered = messages.filter(m => {

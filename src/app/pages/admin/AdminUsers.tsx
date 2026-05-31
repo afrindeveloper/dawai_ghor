@@ -3,7 +3,7 @@ import {
   Search, Plus, Edit2, Trash2, UserCheck, UserX,
   Mail, Phone, MapPin, Calendar, Shield, User, Users
 } from "lucide-react";
-import { getAllUsers, saveAllUsers, User as UserType } from "../../utils/localStorage";
+import { getAllUsers, saveAllUsers, User as UserType } from "../../utils/api";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -17,7 +17,7 @@ export default function AdminUsers() {
   const [newUser, setNewUser] = useState({ name: "", email: "", phone: "", address: "", role: "user" as "user" | "admin" });
 
   useEffect(() => {
-    setUsers(getAllUsers());
+    getAllUsers().then(setUsers);
   }, []);
 
   const filteredUsers = users.filter(u => {

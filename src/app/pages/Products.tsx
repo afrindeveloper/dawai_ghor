@@ -3,9 +3,7 @@ import { Link } from "react-router";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import PromoBanner from "../components/PromoBanner";
-import {
-  addToCart, toggleWishlist, isInWishlist, getManagedProducts
-} from "../utils/localStorage";
+import { getManagedProducts, getWishlist, toggleWishlist, addToCart } from "../utils/api";
 import { products as defaultProducts } from "../data/mockData";
 import { Button } from "../components/ui/button";
 import {
@@ -26,7 +24,8 @@ const SORT_OPTIONS = [
 ];
 
 export default function Products() {
-  const [allProducts] = useState(() => getManagedProducts(defaultProducts));
+  const [allProducts, setAllProducts] = useState<typeof defaultProducts>([]);
+  useEffect(() => { getManagedProducts(defaultProducts).then(setAllProducts) }, []);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("default");
@@ -38,9 +37,7 @@ export default function Products() {
   const [wishlistIds, setWishlistIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    setWishlistIds(new Set(
-      allProducts.filter(p => isInWishlist(p.id)).map(p => p.id)
-    ));
+    getWishlist().then(list => setWishlistIds(new Set(list)));
   }, [allProducts]);
 
   // Filtering
@@ -68,16 +65,16 @@ export default function Products() {
       }
     });
 
-  const handleAddToCart = (product: typeof allProducts[0]) => {
-    addToCart(product);
-    toast.success(`${product.name} added to cart!`);
+  const handleAddToCart = async (product: typeof defaultProducts[0]) => {
+    await addToCart(product);
     window.dispatchEvent(new Event("cartUpdated"));
+    toast.success(`${product.name} added to cart!`);
   };
 
-  const handleWishlist = (productId: string, e: React.MouseEvent) => {
+  const handleWishlist = async (productId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const now = toggleWishlist(productId);
+    const now = await toggleWishlist(productId);
     setWishlistIds(prev => {
       const next = new Set(prev);
       if (now) next.add(productId);

@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router";
 import { Search, ShoppingCart, User, Upload, LogOut, LayoutDashboard, Shield, ChevronDown, X, Menu } from "lucide-react";
-import { getCart, getCurrentUser, logoutUser } from "../utils/localStorage";
+import { getCart, getCurrentUser, logoutUser } from "../utils/api";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
@@ -13,19 +12,19 @@ import MobileNav from "./MobileNav";
 export default function Header() {
   const [cartCount, setCartCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showPrescriptionDialog, setShowPrescriptionDialog] = useState(false);
-  const [user, setUser] = useState(getCurrentUser());
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => { getCurrentUser().then(setUser); }, []);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const updateCartCount = () => {
-      const cart = getCart();
-      setCartCount(cart.reduce((sum, item) => sum + item.quantity, 0));
-    };
-    const updateUser = () => setUser(getCurrentUser());
+    const updateCartCount = async () => {
+    const cart = await getCart();
+    setCartCount(cart.reduce((sum, item) => sum + item.quantity, 0));
+  };
+    const updateUser = () => getCurrentUser().then(setUser);
 
     updateCartCount();
     updateUser();
@@ -56,8 +55,8 @@ export default function Header() {
     if (searchQuery.trim()) navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
   };
 
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    await logoutUser();
     setUser(null);
     setShowUserMenu(false);
     toast.success("Logged out successfully");
@@ -105,7 +104,7 @@ export default function Header() {
                 variant="outline"
                 size="sm"
                 className="hidden sm:flex border-orange-200 text-orange-600 hover:bg-orange-50 rounded-xl gap-2"
-                onClick={() => setShowPrescriptionDialog(true)}
+                onClick={() => navigate("/dashboard/prescriptions")}
               >
                 <Upload className="w-4 h-4" />
                 <span className="hidden md:inline">Upload Rx</span>
@@ -230,7 +229,7 @@ export default function Header() {
                   </Button>
                 </form>
                 <div className="flex gap-2 mt-2">
-                  <Button variant="outline" size="sm" className="flex-1 border-orange-200 text-orange-600 rounded-xl gap-2" onClick={() => { setShowPrescriptionDialog(true); setMobileMenuOpen(false); }}>
+                  <Button variant="outline" size="sm" className="flex-1 border-orange-200 text-orange-600 rounded-xl gap-2" onClick={() => { navigate("/dashboard/prescriptions"); setMobileMenuOpen(false); }}>
                     <Upload className="w-4 h-4" />
                     Upload Prescription
                   </Button>
@@ -243,33 +242,6 @@ export default function Header() {
 
       {/* Mobile Bottom Navigation */}
       <MobileNav />
-
-      {/* Upload Prescription Dialog */}
-      <Dialog open={showPrescriptionDialog} onOpenChange={setShowPrescriptionDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Upload Prescription</DialogTitle>
-            <DialogDescription>Upload your doctor's prescription to order prescription medicines.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div
-              className="border-2 border-dashed border-orange-200 rounded-xl p-8 text-center bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer"
-              onClick={() => { toast.success("File upload dialog opened"); }}
-            >
-              <Upload className="w-12 h-12 mx-auto mb-4 text-orange-400" />
-              <p className="text-slate-700 text-sm mb-1" style={{ fontWeight: 500 }}>Drag & drop your prescription here</p>
-              <p className="text-slate-400 text-xs">or click to browse files</p>
-              <Button variant="outline" className="mt-4 border-orange-300 text-orange-600 hover:bg-orange-50 rounded-xl">
-                Choose File
-              </Button>
-            </div>
-            <p className="text-xs text-slate-400 text-center">Supported: JPG, PNG, PDF (Max 5MB)</p>
-            <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-xl" onClick={() => { setShowPrescriptionDialog(false); toast.success("Prescription submitted for review!"); }}>
-              Upload & Submit
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

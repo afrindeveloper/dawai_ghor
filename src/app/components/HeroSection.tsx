@@ -5,14 +5,14 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import AIDoctorChat from "./AIDoctorChat";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { Sparkles, ArrowRight } from "lucide-react";
-import { getCarousel, CarouselSlide } from "../utils/localStorage";
+import { Sparkles, ArrowRight, Star } from "lucide-react";
+import { getCarousel, CarouselSlide } from "../utils/api";
 import { useNavigate } from "react-router";
 
 const DEFAULT_SLIDES: CarouselSlide[] = [
-  { id: "s1", title: "Your Health, Just a Click Away", subtitle: "Get instant medical advice from our AI Doctor and order 100% authentic medicines.", image: "https://images.unsplash.com/photo-1758691461916-dc7894eb8f94?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080", badge: "Premium Care", ctaText: "Consult AI Doctor", ctaLink: "/ai-doctor", active: true, order: 0 },
-  { id: "s2", title: "Fast Doorstep Delivery", subtitle: "Get your medicines delivered directly to your home within 24-48 hours.", image: "https://images.unsplash.com/photo-1630531208352-a734a7e89c5d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080", badge: "Quick Delivery", ctaText: "Shop Now", ctaLink: "/products", active: true, order: 1 },
-  { id: "s3", title: "100% Authentic Medicines", subtitle: "All products are verified and sourced directly from reputable manufacturers.", image: "https://images.unsplash.com/photo-1729949129758-0b668478dce5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080", badge: "Trusted Quality", ctaText: "Browse Products", ctaLink: "/products", active: true, order: 2 },
+  { id: "s1", title: "Your Health, Just a Click Away", subtitle: "Get instant medical advice from our AI Doctor and order 100% authentic medicines.", image: "/images/hero_ai_health.png", badge: "Premium Care", ctaText: "Consult AI Doctor", ctaLink: "/ai-doctor", active: true, order: 0 },
+  { id: "s2", title: "Fast Doorstep Delivery", subtitle: "Get your medicines delivered directly to your home within 24-48 hours.", image: "/images/hero_delivery.png", badge: "Quick Delivery", ctaText: "Shop Now", ctaLink: "/products", active: true, order: 1 },
+  { id: "s3", title: "100% Authentic Medicines", subtitle: "All products are verified and sourced directly from reputable manufacturers.", image: "/images/hero_authentic.png", badge: "Trusted Quality", ctaText: "Browse Products", ctaLink: "/products", active: true, order: 2 },
 ];
 
 export default function HeroSection() {
@@ -21,8 +21,10 @@ export default function HeroSection() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const slides = getCarousel().filter(s => s.active).sort((a, b) => a.order - b.order);
-    if (slides.length > 0) setCarouselItems(slides);
+    getCarousel().then(loaded => {
+      const active = loaded.filter(s => s.active).sort((a, b) => a.order - b.order);
+      if (active.length > 0) setCarouselItems(active);
+    });
   }, []);
 
   const handleCTA = (link: string) => {
@@ -122,8 +124,8 @@ export default function HeroSection() {
             </div>
             <div className="h-px w-full bg-white/20"></div>
             <div className="flex items-center gap-3">
-              <div className="flex text-yellow-400">
-                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+              <div className="flex text-yellow-400 text-xs mb-1">
+                <Star className="w-3 h-3 fill-current" /><Star className="w-3 h-3 fill-current" /><Star className="w-3 h-3 fill-current" /><Star className="w-3 h-3 fill-current" /><Star className="w-3 h-3 fill-current" />
               </div>
               <div className="text-white">
                 <span className="font-bold text-lg">4.9/5</span>
@@ -134,9 +136,9 @@ export default function HeroSection() {
         </motion.div>
 
         <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-md border border-white/20 rounded-xl p-3 sm:hidden z-10">
-          <div className="flex items-center gap-2 text-white">
-            <span className="text-yellow-400 text-sm">★</span>
-            <span className="font-bold text-sm">4.9</span>
+          <div className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full">
+            <Star className="w-3 h-3 text-yellow-400 fill-current" />
+            <span className="text-white text-xs" style={{ fontWeight: 600 }}>4.9</span>
             <span className="text-xs text-gray-300">(10k+)</span>
           </div>
         </div>
