@@ -285,7 +285,7 @@ export default function AIDoctorPage() {
         </aside>
 
         {/* ── Main Chat Area ── */}
-        <div className="flex-1 flex flex-col h-full bg-white relative">
+        <div className="flex-1 min-w-0 flex flex-col h-full bg-white relative">
           
           {/* Chat Header */}
           <div className="bg-white border-b border-slate-100 px-4 sm:px-6 py-3.5 flex items-center justify-between shrink-0 z-10 shadow-sm">
@@ -433,7 +433,7 @@ export default function AIDoctorPage() {
               <button className="p-2.5 rounded-xl hover:bg-slate-100 transition-colors shrink-0 text-slate-400 lg:hidden">
                 <Paperclip className="w-5 h-5" />
               </button>
-              <div className="flex-1 flex items-center bg-slate-100 border border-transparent rounded-2xl px-4 focus-within:bg-white focus-within:border-orange-300 focus-within:shadow-sm focus-within:ring-2 focus-within:ring-orange-100 transition-all">
+              <div className="flex-1 min-w-0 flex items-center bg-slate-100 border border-transparent rounded-2xl px-4 focus-within:bg-white focus-within:border-orange-300 focus-within:shadow-sm focus-within:ring-2 focus-within:ring-orange-100 transition-all">
                 <input
                   ref={inputRef}
                   type="text"
@@ -441,7 +441,7 @@ export default function AIDoctorPage() {
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && sendMessage()}
                   placeholder="Ask anything about your health..."
-                  className="flex-1 bg-transparent py-3.5 text-[15px] text-slate-800 placeholder-slate-400 outline-none"
+                  className="flex-1 min-w-0 bg-transparent py-3.5 text-[15px] text-slate-800 placeholder-slate-400 outline-none"
                 />
                 <button className="p-1.5 hover:bg-slate-200 rounded-lg transition-colors text-slate-400 ml-1">
                   <Mic className="w-5 h-5" />
