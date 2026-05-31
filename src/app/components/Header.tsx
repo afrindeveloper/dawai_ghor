@@ -122,7 +122,7 @@ export default function Header() {
                         {user?.name?.charAt(0).toUpperCase()}
                       </div>
                       <div className="text-left">
-                        <p className="text-slate-900 text-xs leading-none" style={{ fontWeight: 600 }}>{user.name.split(" ")[0]}</p>
+                        <p className="text-slate-900 text-xs leading-none" style={{ fontWeight: 600 }}>{user?.name?.split(" ")[0]}</p>
                         <p className="text-slate-400 text-xs mt-0.5 capitalize">{user.role}</p>
                       </div>
                       <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${showUserMenu ? "rotate-180" : ""}`} />

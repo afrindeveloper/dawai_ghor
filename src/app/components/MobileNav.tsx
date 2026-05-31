@@ -129,7 +129,7 @@ export default function MobileNav() {
                       )}
                     </motion.div>
                     <span className={`text-[10px] ${showProfileSheet || active ? "text-orange-500" : "text-slate-400"}`} style={{ fontWeight: showProfileSheet ? 700 : 500 }}>
-                      {user ? user.name.split(" ")[0] : "Account"}
+                      {user ? user?.name?.split(" ")[0] : "Account"}
                     </span>
                     {(showProfileSheet || active) && (
                       <motion.span
