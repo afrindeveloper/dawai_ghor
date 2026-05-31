@@ -27,7 +27,9 @@ const cookieOptions = {
 
 const allowedOrigins = process.env.FRONTEND_URL ? [process.env.FRONTEND_URL, 'http://localhost:5173'] : ['http://localhost:5173'];
 app.use(cors({
-  origin: [process.env.FRONTEND_URL, 'http://localhost:5173', 'https://dawai-ghor.vercel.app', 'https://dawaighor.vercel.app'].filter(Boolean),
+  origin: function (origin, callback) {
+    callback(null, true);
+  },
   credentials: true
 }));
 app.use(express.json());
