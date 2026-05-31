@@ -218,7 +218,7 @@ export default function Products() {
             <Button
               size="sm"
               className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl h-9"
-              onClick={() => handleAddToCart(product)}
+              onClick={(e) => handleAddToCart(product, e)}
               disabled={product.inStock === false}
             >
               <ShoppingCart className="w-3.5 h-3.5 mr-1" />
