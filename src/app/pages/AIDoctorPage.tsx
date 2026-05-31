@@ -413,7 +413,7 @@ export default function AIDoctorPage() {
           </div>
 
           {/* Input Area */}
-          <div className="bg-white border-t border-slate-200 p-3 pb-24 md:pb-5 lg:p-5 shrink-0 z-10 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)]">
+          <div className="bg-white border-t border-slate-200 p-3 pb-[env(safe-area-inset-bottom)] sm:p-5 shrink-0 z-10 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)]">
             
             {/* Mobile Categories (Scrollable) */}
             <div className="flex gap-2 overflow-x-auto pb-3 mb-1 lg:hidden custom-scrollbar">

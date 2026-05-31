@@ -64,8 +64,8 @@ export default function MobileNav() {
     window.dispatchEvent(new Event("userUpdated"));
   };
 
-  // Don't show on admin or dashboard pages
-  const hide = location.pathname.startsWith("/admin") || location.pathname.startsWith("/dashboard");
+  // Don't show on admin, dashboard, or ai-doctor pages
+  const hide = location.pathname.startsWith("/admin") || location.pathname.startsWith("/dashboard") || location.pathname === "/ai-doctor";
   if (hide) return null;
 
   return (
