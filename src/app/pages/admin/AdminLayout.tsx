@@ -25,13 +25,20 @@ export default function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  useEffect(() => { getCurrentUser().then(setUser); }, []);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user || user.role !== "admin") {
+    getCurrentUser().then(u => {
+      setUser(u);
+      setLoading(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!loading && (!user || user.role !== "admin")) {
       navigate("/login");
     }
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
 
   const handleLogout = async () => {
     await logoutUser();
@@ -129,7 +136,7 @@ export default function AdminLayout() {
     </div>
   );
 
-  if (!user || user.role !== "admin") return null;
+  if (loading || !user || user.role !== "admin") return null;
 
   return (
     <div className="flex h-screen bg-slate-100 overflow-hidden">

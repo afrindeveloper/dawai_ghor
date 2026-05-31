@@ -183,19 +183,6 @@ export default function Login() {
               </p>
             </div>
 
-            {/* Admin hint */}
-            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-3.5 mb-5 flex items-start gap-3">
-              <AlertCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <p className="text-blue-800 text-xs" style={{ fontWeight: 700 }}>Demo Access</p>
-                <p className="text-blue-600 text-xs mt-0.5">Admin: admin@dawai.com / admin123</p>
-                <div className="flex gap-2 mt-2">
-                  <button onClick={fillAdmin} className="px-2.5 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors" style={{ fontWeight: 600 }}>Fill Admin</button>
-                  <button onClick={fillDemo} className="px-2.5 py-1 bg-blue-100 text-blue-700 text-xs rounded-lg hover:bg-blue-200 transition-colors" style={{ fontWeight: 600 }}>Fill User</button>
-                </div>
-              </div>
-            </div>
-
             {/* Error */}
             <AnimatePresence>
               {error && (
