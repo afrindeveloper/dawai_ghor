@@ -139,7 +139,7 @@ export default function AdminUsers() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm flex-shrink-0 ${user.role === "admin" ? "bg-gradient-to-br from-purple-500 to-purple-600" : "bg-gradient-to-br from-orange-400 to-orange-600"}`} style={{ fontWeight: 700 }}>
-                        {user.name.charAt(0)}
+                        {user?.name?.charAt(0)}
                       </div>
                       <div>
                         <p className="text-slate-900 text-sm" style={{ fontWeight: 500 }}>{user.name}</p>

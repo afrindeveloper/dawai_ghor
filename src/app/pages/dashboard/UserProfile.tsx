@@ -50,7 +50,7 @@ export default function UserProfile() {
       >
         <div className="flex items-center gap-5 mb-8">
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white shadow-lg shadow-orange-200" style={{ fontWeight: 700, fontSize: "28px" }}>
-            {profile.name.charAt(0).toUpperCase()}
+            {profile?.name?.charAt(0).toUpperCase()}
           </div>
           <div>
             <h3 className="text-slate-900" style={{ fontWeight: 700 }}>{profile.name}</h3>

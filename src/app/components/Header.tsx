@@ -119,7 +119,7 @@ export default function Header() {
                       className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-50 transition-colors"
                     >
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm flex-shrink-0 ${user.role === "admin" ? "bg-gradient-to-br from-purple-500 to-purple-600" : "bg-gradient-to-br from-orange-400 to-orange-600"}`} style={{ fontWeight: 700 }}>
-                        {user.name.charAt(0).toUpperCase()}
+                        {user?.name?.charAt(0).toUpperCase()}
                       </div>
                       <div className="text-left">
                         <p className="text-slate-900 text-xs leading-none" style={{ fontWeight: 600 }}>{user.name.split(" ")[0]}</p>

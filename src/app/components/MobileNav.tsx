@@ -119,7 +119,7 @@ export default function MobileNav() {
                             ? "bg-gradient-to-br from-purple-500 to-purple-600"
                             : "bg-gradient-to-br from-orange-400 to-orange-600"
                         }`} style={{ fontWeight: 700 }}>
-                          {user.name.charAt(0).toUpperCase()}
+                          {user?.name?.charAt(0).toUpperCase()}
                         </div>
                       ) : (
                         <item.icon className={`w-6 h-6 ${active || showProfileSheet ? "text-orange-500" : "text-slate-400"}`} />
@@ -208,7 +208,7 @@ export default function MobileNav() {
                           ? "bg-gradient-to-br from-purple-500 to-purple-600 shadow-purple-200"
                           : "bg-gradient-to-br from-orange-400 to-orange-600 shadow-orange-200"
                       }`} style={{ fontWeight: 700 }}>
-                        {user.name.charAt(0).toUpperCase()}
+                        {user?.name?.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-slate-900 text-base truncate" style={{ fontWeight: 700 }}>{user.name}</p>

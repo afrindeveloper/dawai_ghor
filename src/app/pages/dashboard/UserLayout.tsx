@@ -45,7 +45,7 @@ export default function UserLayout() {
       <div className="p-6 border-b border-slate-100">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white flex-shrink-0" style={{ fontWeight: 700, fontSize: "18px" }}>
-            {user.name.charAt(0).toUpperCase()}
+            {user?.name?.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-slate-900 truncate" style={{ fontWeight: 600 }}>{user.name}</p>
@@ -149,7 +149,7 @@ export default function UserLayout() {
           </button>
           <span className="text-slate-900" style={{ fontWeight: 600 }}>My Dashboard</span>
           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-sm" style={{ fontWeight: 700 }}>
-            {user.name.charAt(0)}
+            {user?.name?.charAt(0)}
           </div>
         </header>
 

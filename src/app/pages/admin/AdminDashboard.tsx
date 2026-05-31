@@ -213,7 +213,7 @@ export default function AdminDashboard() {
             {recentMessages.map(msg => (
               <div key={msg.id} className="flex items-center gap-3 px-6 py-3.5 hover:bg-slate-50 transition-colors">
                 <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-white text-sm font-bold ${msg.read ? "bg-slate-300" : "bg-orange-500"}`}>
-                  {msg.name.charAt(0)}
+                  {msg?.name?.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
