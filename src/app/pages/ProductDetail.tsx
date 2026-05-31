@@ -23,6 +23,7 @@ export default function ProductDetail() {
   const [allProducts, setAllProducts] = useState<typeof defaultProducts>([]);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     getManagedProducts(defaultProducts).then(setAllProducts);
   }, []);
 

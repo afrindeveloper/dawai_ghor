@@ -325,16 +325,16 @@ export default function AIDoctorPage() {
                     {msg.type === "bot" ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
                   </div>
 
-                  <div className={`flex flex-col gap-2 flex-1 min-w-0 ${msg.type === "user" ? "items-end" : "items-start"}`}>
+                  <div className="flex flex-col gap-2 flex-1 min-w-0">
                     <div className={`rounded-2xl px-5 py-3.5 shadow-sm max-w-[90%] sm:max-w-[80%] text-[15px] leading-relaxed ${msg.type === "user"
-                        ? "bg-slate-800 text-white rounded-tr-sm"
-                        : "bg-white border border-slate-200 text-slate-700 rounded-tl-sm"
+                        ? "bg-slate-800 text-white rounded-tr-sm self-end"
+                        : "bg-white border border-slate-200 text-slate-700 rounded-tl-sm self-start"
                       }`}>
                       <div className="whitespace-pre-wrap">{msg.type === "bot" ? formatText(msg.text) : msg.text}</div>
                     </div>
 
                     {msg.medicines && msg.medicines.length > 0 && (
-                      <div className="w-full max-w-[90%] sm:max-w-[80%] grid gap-2 mt-1">
+                      <div className={`w-full max-w-[90%] sm:max-w-[80%] grid gap-2 mt-1 ${msg.type === "user" ? "self-end" : "self-start"}`}>
                         {msg.medicines.map((med, i) => (
                           <div key={i} className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -355,7 +355,7 @@ export default function AIDoctorPage() {
                     )}
 
                     {msg.tips && msg.tips.length > 0 && (
-                      <div className="w-full max-w-[90%] sm:max-w-[80%] bg-emerald-50 border border-emerald-100 rounded-xl p-3.5 mt-1">
+                      <div className={`w-full max-w-[90%] sm:max-w-[80%] bg-emerald-50 border border-emerald-100 rounded-xl p-3.5 mt-1 ${msg.type === "user" ? "self-end" : "self-start"}`}>
                         <div className="flex items-center gap-2 mb-2">
                           <CheckCircle className="w-4 h-4 text-emerald-600" />
                           <p className="text-emerald-800 text-xs font-semibold uppercase tracking-wide">Care Tips</p>
@@ -372,7 +372,7 @@ export default function AIDoctorPage() {
                     )}
 
                     {msg.quickReplies && msg.quickReplies.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-1">
+                      <div className={`flex flex-wrap gap-2 mt-1 ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
                         {msg.quickReplies.map((reply, i) => (
                           <button
                             key={i}
@@ -385,7 +385,7 @@ export default function AIDoctorPage() {
                       </div>
                     )}
 
-                    <p className={`text-[10px] text-slate-400 mt-0.5 ${msg.type === "user" ? "mr-1" : "ml-1"}`}>
+                    <p className={`text-[10px] text-slate-400 mt-0.5 ${msg.type === "user" ? "self-end mr-1" : "self-start ml-1"}`}>
                       {formatTime(msg.timestamp)}
                     </p>
                   </div>
