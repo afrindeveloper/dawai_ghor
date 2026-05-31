@@ -73,7 +73,7 @@ export default function Products() {
       window.dispatchEvent(new Event("cartUpdated"));
       toast.success(`${product.name} added to cart!`);
     } catch (error) {
-      toast.error("Please sign in to add items to cart");
+      toast.error("Failed to add item to cart. Please try again.");
     }
   };
 

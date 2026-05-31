@@ -24,7 +24,7 @@ export default function TrendingProducts() {
       toast.success(`${product.name} added to cart!`);
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
-      toast.error("Please sign in to add items to cart");
+      toast.error("Failed to add item to cart. Please try again.");
     }
   };
 
