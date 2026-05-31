@@ -325,7 +325,7 @@ export default function AIDoctorPage() {
                     {msg.type === "bot" ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
                   </div>
 
-                  <div className={`flex flex-col gap-2 min-w-[200px] w-full ${msg.type === "user" ? "items-end" : "items-start"}`}>
+                  <div className={`flex flex-col gap-2 flex-1 min-w-0 ${msg.type === "user" ? "items-end" : "items-start"}`}>
                     <div className={`rounded-2xl px-5 py-3.5 shadow-sm max-w-[90%] sm:max-w-[80%] text-[15px] leading-relaxed ${msg.type === "user"
                         ? "bg-slate-800 text-white rounded-tr-sm"
                         : "bg-white border border-slate-200 text-slate-700 rounded-tl-sm"
