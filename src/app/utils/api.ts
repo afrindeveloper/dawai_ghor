@@ -156,12 +156,13 @@ export const loginUser = async (email: string, password: string): Promise<User |
   }
 };
 
-export const registerNewUser = async (data: { name: string; email: string; phone?: string }): Promise<User> => {
+export const registerNewUser = async (data: { name: string; email: string; phone?: string; password?: string }): Promise<User> => {
   const newUser = {
     id: `user-${Date.now()}`,
     name: data.name,
     email: data.email,
     phone: data.phone,
+    password: data.password,
     role: 'user',
     joinedAt: new Date().toISOString().split('T')[0],
     isActive: true,

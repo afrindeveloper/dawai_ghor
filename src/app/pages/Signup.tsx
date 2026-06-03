@@ -46,10 +46,19 @@ export default function Signup() {
     if (!agreeToTerms) { setError("Please agree to the Terms of Service"); return; }
 
     setLoading(true);
-    await new Promise(r => setTimeout(r, 800));
-    registerNewUser({ name: formData.fullName, email: formData.email, phone: formData.phone });
-    window.dispatchEvent(new Event("userUpdated"));
-    navigate("/dashboard");
+    try {
+      await registerNewUser({ 
+        name: formData.fullName, 
+        email: formData.email, 
+        phone: formData.phone,
+        password: formData.password 
+      });
+      window.dispatchEvent(new Event("userUpdated"));
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Failed to create account. Please try again.");
+      setLoading(false);
+    }
   };
 
   const pwStrength = PASSWORD_RULES.filter(r => r.test(formData.password)).length;

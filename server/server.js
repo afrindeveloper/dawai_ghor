@@ -81,6 +81,9 @@ app.post('/api/users/login', async (req, res) => {
   }
   const user = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') }, isActive: true, role: 'user' });
   if (user) {
+    if (user.password && user.password !== password) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
     res.cookie('userId', user.id, cookieOptions);
     return res.json(user);
   }
@@ -90,6 +93,7 @@ app.post('/api/users/login', async (req, res) => {
       id: `user-${Date.now()}`,
       name: email.split('@')[0],
       email,
+      password,
       role: 'user',
       joinedAt: new Date().toISOString().split('T')[0],
       isActive: true,
