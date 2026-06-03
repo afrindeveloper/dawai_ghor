@@ -21,11 +21,18 @@ export default function UserLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  useEffect(() => { getCurrentUser().then(setUser); }, []);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { 
+    getCurrentUser().then(u => {
+      setUser(u);
+      setLoading(false);
+    }); 
+  }, []);
 
   useEffect(() => {
-    if (!user) navigate("/login");
-  }, [user, navigate]);
+    if (!loading && !user) navigate("/login");
+  }, [user, loading, navigate]);
 
   const handleLogout = async () => {
     await logoutUser();
@@ -37,7 +44,7 @@ export default function UserLayout() {
     return location.pathname.startsWith(item.path);
   };
 
-  if (!user) return null;
+  if (loading || !user) return null;
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
