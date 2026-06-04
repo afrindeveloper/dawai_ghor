@@ -16,10 +16,7 @@ interface Prescription {
   size: string;
 }
 
-const mockPrescriptions: Prescription[] = [
-  { id: "rx-001", fileName: "Prescription_April2025.jpg", uploadedAt: "2025-04-15", status: "approved", doctorName: "Dr. Rahman", medicines: "Amoxicillin 500mg, Napa 500mg", size: "1.2 MB" },
-  { id: "rx-002", fileName: "Doctor_Note_March.pdf", uploadedAt: "2025-03-28", status: "pending", doctorName: "Dr. Fatema", medicines: "Under review", size: "0.8 MB" },
-];
+const mockPrescriptions: Prescription[] = [];
 
 const statusConfig = {
   pending: { label: "Under Review", color: "text-yellow-700", bg: "bg-yellow-100", icon: Clock },
